@@ -1,0 +1,39 @@
+[project]
+name = "TODO-tool-slug"
+version = "0.1.0"
+description = "TODO one-line description"
+requires-python = ">=3.13"
+readme = "README.md"
+
+[tool.ruff]
+# Update `src = [...]` to your package layout after stamping the template.
+line-length = 100
+target-version = "py313"
+src = ["tests"]
+extend-exclude = [".venv"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "UP",   # pyupgrade
+    "SIM",  # flake8-simplify
+]
+ignore = [
+    "E501",  # line-too-long handled by formatter
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["B011"]  # assert False is fine in tests
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-ra --strict-markers"

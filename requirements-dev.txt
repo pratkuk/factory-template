@@ -1,0 +1,5 @@
+# Dev/CI deps. Kept separate from requirements.txt so production runs are lean.
+-r requirements.txt
+
+ruff>=0.7,<1
+pytest>=8.0,<9
