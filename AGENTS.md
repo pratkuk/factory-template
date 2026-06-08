@@ -58,6 +58,17 @@ Replace this block entirely; don't leave the examples.>>
 - Use the **A/B/C/D turn rhythm** for multi-step features: A = scaffold (no behavior change), B = core implementation, C = integration / cutover, D = verify + journal + PR. Per-turn commits make PRs reviewable.
 - Squash-merge to `main`. Each PR = one logical change on `main`'s history.
 
+## Orchestration / dynamic workflows
+
+When a task in this repo fights a single context window — long-running, massively parallel, or
+adversarial — reach for a **dynamic workflow** (`ultracode`) instead of grinding through it in
+one window. Good dev-time fits: verifying a load-bearing rule (one verifier agent per rule),
+running a migration across many callsites, adversarially checking a risky change, or mining this
+tool's `docs/JOURNAL.md` for recurring corrections to promote. This is a *dev-time* aid — it costs
+extra tokens, so use it deliberately (the boring-tool rule applies). Building orchestration into
+this tool's **runtime product** is a separate decision that needs an ADR (it adds LLM cost to the
+live path). Catalog: `factory-meta/patterns/dynamic-workflows.md`.
+
 ## What to never do without explicit confirmation
 
 - Add a runtime dependency that isn't already in `requirements.txt`
