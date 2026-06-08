@@ -39,6 +39,17 @@ Default (replace as appropriate):
 4. **Data portability**: if the change touches persistent data, the exit plan in `docs/PRD.md` must still hold. Update it if it doesn't.
 5. **Observability over uptime**: prefer structured logs over uptime pings. Cron jobs should log loudly when they fail — silence is the worst signal.
 6. **Move invariants to the strongest layer**: enforce rules at the database (UNIQUE constraints, NOT NULL, CHECK) when possible, not just in Python. The DB layer is unbypassable.
+7. **Hold the harness loosely**: orchestration code, prompt scaffolding, and retry logic are disposable (~90-day) — expect to rewrite them on model releases. The durable layer is `docs/JOURNAL.md`, `docs/adr/`, any skills, and the tool's data. Spend effort proportional to durability.
+
+## Agent architecture (only if this tool calls an LLM to do real work)
+
+These restate `factory-meta/stack.md` §"Agent architecture defaults" — see it for the full version.
+
+- **Start constrained.** A fixed path (model calls in a control flow you wrote) beats an open-ended agent for accuracy, cost, and auditability. Widen autonomy only when the task genuinely can't be pre-mapped.
+- **Single session + fat skills.** Push intelligence into Markdown skills, deterministic work into scripts. Multi-agent only for genuinely parallel/adversarial/too-big-for-one-context work, and **writes stay single-threaded** (one writer; other agents only critique).
+- **Plain-text state.** Progress files, git log, typed JSON in the working directory. No custom memory layer unless the PRD justifies it.
+- **Reliability ladder, in order:** (1) constrain the path, (2) add deterministic checks for anything code can verify, (3) only then a validated LLM-judge, for high-value taste-based judgments only, validated against my own held-back labels. Don't reach for an LLM-judge when a deterministic check would do.
+- **Per-task model routing**: Haiku for discovery/lookups, Sonnet for implementation, Opus for planning/judgment. Pin model IDs + prices from a working tool's source, not memory.
 
 ## Tool-specific rules
 
@@ -77,6 +88,7 @@ live path). Catalog: `factory-meta/patterns/dynamic-workflows.md`.
 - Change `AGENTS.md`, `docs/PRD.md`, or workflow YAMLs without an ADR
 - Delete or rewrite history on `main`
 - Commit anything that looks like a secret
+- Give an agent that reads untrusted external content (web pages, job boards, email, scraped JDs) the same credentials it uses to write/publish — keep the untrusted-read path and the write path on separate privileges (quarantine).
 
 <<TOOL-SPECIFIC: add any tool-specific never-do-without-confirmation items here.>>
 
